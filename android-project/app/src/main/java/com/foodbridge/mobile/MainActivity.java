@@ -23,8 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeLayout;
     private ProgressBar mProgressBar;
 
-    // Change SERVER_URL to your deployed production URL or local server IP (e.g. http://192.168.1.5:5000)
-    public static final String SERVER_URL = "https://mobile-foodbridge.onrender.com";
+    // Configured for Option 2: Local Network IP + Online Fallback
+    public static final String LOCAL_URL = "http://10.1.26.51:5000";
+    public static final String SERVER_URL = LOCAL_URL;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
