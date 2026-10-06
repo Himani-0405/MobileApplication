@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.FoodBridgeMobile" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#10b981</item>
+        <item name="colorPrimaryDark">#059669</item>
+        <item name="colorAccent">#34d399</item>
+        <item name="android:statusBarColor">#0f172a</item>
+        <item name="android:navigationBarColor">#0f172a</item>
+    </style>
+</resources>

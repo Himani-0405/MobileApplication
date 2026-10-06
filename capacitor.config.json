@@ -1,0 +1,17 @@
+{
+  "appId": "com.foodbridge.mobile",
+  "appName": "FoodBridge Mobile",
+  "webDir": "static",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://mobile-foodbridge.onrender.com",
+    "cleartext": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0f172a",
+      "showSpinner": false
+    }
+  }
+}

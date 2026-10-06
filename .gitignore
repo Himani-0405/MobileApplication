@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.vscode/
+*.log
+.DS_Store
+android-project/.gradle/
+android-project/build/
+android-project/app/build/

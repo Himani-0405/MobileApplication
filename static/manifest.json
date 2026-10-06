@@ -1,0 +1,24 @@
+{
+  "name": "FoodBridge Mobile Platform",
+  "short_name": "FoodBridge",
+  "description": "Zero Food Waste Redistribution Platform connecting donors, NGOs, and volunteers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

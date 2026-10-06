@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FoodBridge Mobile — Zero Food Waste Platform</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Remix Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <meta name="theme-color" content="#10b981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/static/manifest.json">
+  <!-- Mobile App CSS -->
+  <link rel="stylesheet" href="/static/css/mobile.css">
+</head>
+<body class="dark-theme">
+
+  <!-- Desktop Emulation Device Shell Container -->
+  <div class="app-viewport-wrapper">
+    <div class="mobile-frame" id="mobileFrame">
+      
+      <!-- Phone Header Bar / Notch -->
+      <div class="phone-notch-bar">
+        <span class="notch-time" id="notchTime">09:41</span>
+        <div class="notch-camera"></div>
+        <div class="notch-icons">
+          <i class="ri-signal-tower-fill"></i>
+          <i class="ri-wifi-line"></i>
+          <i class="ri-battery-charge-fill"></i>
+        </div>
+      </div>
+
+      <!-- App Header Bar -->
+      <header class="app-header">
+        <div class="header-brand" id="brandBtn">
+          <div class="brand-logo-icon">
+            <i class="ri-restaurant-2-fill"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">FoodBridge</span>
+            <span class="brand-tagline">Mobile Platform</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="header-icon-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+            <i class="ri-moon-line" id="themeIcon"></i>
+          </button>
+          <button class="header-icon-btn" id="frameToggleBtn" title="Toggle Desktop/Mobile View Mode">
+            <i class="ri-cellphone-line" id="frameIcon"></i>
+          </button>
+          <div class="user-chip" id="userChip" style="display: none;">
+            <span class="user-role-badge" id="userRoleBadge">Donor</span>
+            <span class="user-name" id="userNameText">Alex</span>
+            <button class="logout-btn" id="logoutBtn" title="Logout"><i class="ri-logout-box-r-line"></i></button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Scrollable Content Views Container -->
+      <main class="app-main-content">
+        
+        <!-- 1. LANDING VIEW -->
+        <section class="app-view active" id="view-landing">
+          <div class="hero-card">
+            <div class="hero-badge">
+              <i class="ri-leaf-fill"></i> Zero Surplus Waste
+            </div>
+            <h1 class="hero-title">Bridge Surplus Food to <span class="highlight">Hungry Hearts</span></h1>
+            <p class="hero-desc">Connecting Donors, NGOs, and Volunteers in real-time to eliminate hunger & food waste.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary btn-glow" id="landingGetStartedBtn">
+                Get Started <i class="ri-arrow-right-line"></i>
+              </button>
+              <button class="btn btn-secondary" id="landingExploreBtn">
+                Live Stats <i class="ri-bar-chart-box-line"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Impact Metrics Grid -->
+          <div class="stats-overview-grid">
+            <div class="impact-card">
+              <div class="impact-icon emerald"><i class="ri-restaurant-fill"></i></div>
+              <div class="impact-info">
+                <span class="impact-value" id="pubMealCount">0</span>
+                <span class="impact-label">Meals Rescued</span>
+              </div>
+            </div>
+            <div class="impact-card">
+              <div class="impact-icon amber"><i class="ri-store-2-fill"></i></div>
+              <div class="impact-info">
+                <span class="impact-value" id="pubDonorCount">0</span>
+                <span class="impact-label">Active Donors</span>
+              </div>
+            </div>
+            <div class="impact-card">
+              <div class="impact-icon blue"><i class="ri-building-4-fill"></i></div>
+              <div class="impact-info">
+                <span class="impact-value" id="pubNgoCount">0</span>
+                <span class="impact-label">Partner NGOs</span>
+              </div>
+            </div>
+            <div class="impact-card">
+              <div class="impact-icon rose"><i class="ri-user-star-fill"></i></div>
+              <div class="impact-info">
+                <span class="impact-value" id="pubVolCount">0</span>
+                <span class="impact-label">Volunteers</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role Selector Banner -->
+          <div class="section-header">
+            <h3>Select Your Mobile Workspace</h3>
+            <p>Access exact role workflows tailored for your mobile screen</p>
+          </div>
+
+          <div class="role-cards-container">
+            <div class="role-selection-card donor-card" onclick="app.selectRole('donor')">
+              <div class="role-card-header">
+                <div class="role-icon-box"><i class="ri-shopping-bag-3-fill"></i></div>
+                <div class="role-meta">
+                  <h4>Food Donor</h4>
+                  <p>Restaurants, Hotels & Individuals</p>
+                </div>
+              </div>
+              <ul class="role-features">
+                <li><i class="ri-check-line"></i> Post surplus food donations in seconds</li>
+                <li><i class="ri-check-line"></i> Real-time journey tracking & OTP protection</li>
+                <li><i class="ri-check-line"></i> View NGO ratings & hygiene scores</li>
+              </ul>
+              <button class="btn btn-outline width-full">Launch Donor Workspace <i class="ri-arrow-right-s-line"></i></button>
+            </div>
+
+            <div class="role-selection-card ngo-card" onclick="app.selectRole('ngo')">
+              <div class="role-card-header">
+                <div class="role-icon-box"><i class="ri-heart-pulse-fill"></i></div>
+                <div class="role-meta">
+                  <h4>NGO / Shelter</h4>
+                  <p>Distribution & Relief Organizations</p>
+                </div>
+              </div>
+              <ul class="role-features">
+                <li><i class="ri-check-line"></i> Live feed of surplus donations near you</li>
+                <li><i class="ri-check-line"></i> Partial & full meal quantity acceptance</li>
+                <li><i class="ri-check-line"></i> Rate donor hygiene & manage incoming deliveries</li>
+              </ul>
+              <button class="btn btn-outline width-full">Launch NGO Workspace <i class="ri-arrow-right-s-line"></i></button>
+            </div>
+
+            <div class="role-selection-card volunteer-card" onclick="app.selectRole('volunteer')">
+              <div class="role-card-header">
+                <div class="role-icon-box"><i class="ri-motorbike-fill"></i></div>
+                <div class="role-meta">
+                  <h4>Delivery Volunteer</h4>
+                  <p>Community Heroes & Logistics</p>
+                </div>
+              </div>
+              <ul class="role-features">
+                <li><i class="ri-check-line"></i> Claim available pickup tasks nearby</li>
+                <li><i class="ri-check-line"></i> OTP verification for seamless handoff</li>
+                <li><i class="ri-check-line"></i> Vehicle & availability status management</li>
+              </ul>
+              <button class="btn btn-outline width-full">Launch Volunteer Workspace <i class="ri-arrow-right-s-line"></i></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. AUTH VIEW -->
+        <section class="app-view" id="view-auth">
+          <div class="auth-container">
+            <div class="auth-header">
+              <h2 id="authTitle">Sign In</h2>
+              <p id="authSubtitle">Select your role and log into your FoodBridge account</p>
+            </div>
+
+            <!-- Role Selector Pills -->
+            <div class="role-pill-selector">
+              <button class="role-pill active" data-role="donor" onclick="app.switchAuthRole('donor')">
+                <i class="ri-shopping-bag-3-line"></i> Donor
+              </button>
+              <button class="role-pill" data-role="ngo" onclick="app.switchAuthRole('ngo')">
+                <i class="ri-heart-pulse-line"></i> NGO
+              </button>
+              <button class="role-pill" data-role="volunteer" onclick="app.switchAuthRole('volunteer')">
+                <i class="ri-motorbike-line"></i> Volunteer
+              </button>
+            </div>
+
+            <!-- Mode Switch (Login / Signup) -->
+            <div class="auth-mode-switch">
+              <button class="mode-tab active" id="modeLoginBtn" onclick="app.switchAuthMode('login')">Sign In</button>
+              <button class="mode-tab" id="modeSignupBtn" onclick="app.switchAuthMode('signup')">Create Account</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" class="auth-form" onsubmit="app.handleLogin(event)">
+              <div class="form-group">
+                <label><i class="ri-user-3-line"></i> Name / Business Name</label>
+                <input type="text" id="loginName" class="form-input" placeholder="e.g. Fresh Bites Bakery" required>
+              </div>
+              <div class="form-group">
+                <label><i class="ri-lock-password-line"></i> Password</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+              </div>
+              <button type="submit" class="btn btn-primary width-full">Sign In to Dashboard <i class="ri-login-box-line"></i></button>
+            </form>
+
+            <!-- SIGNUP FORM -->
+            <form id="signupForm" class="auth-form" style="display: none;" onsubmit="app.handleSignup(event)">
+              <div class="form-group">
+                <label><i class="ri-user-3-line"></i> Full Name / Organization</label>
+                <input type="text" id="signupName" class="form-input" placeholder="e.g. Hope Haven Shelter" required>
+              </div>
+              <div class="form-group">
+                <label><i class="ri-mail-line"></i> Email Address</label>
+                <input type="email" id="signupEmail" class="form-input" placeholder="contact@domain.com" required>
+              </div>
+              <div class="form-group">
+                <label><i class="ri-phone-line"></i> Mobile Contact Number</label>
+                <input type="tel" id="signupMobile" class="form-input" placeholder="+1 555-0199" required>
+              </div>
+              <div class="form-group">
+                <label><i class="ri-lock-password-line"></i> Password</label>
+                <input type="password" id="signupPassword" class="form-input" placeholder="Create a password" required>
+              </div>
+
+              <!-- Extra NGO Fields -->
+              <div id="ngoExtraFields" style="display: none;">
+                <div class="form-group">
+                  <label><i class="ri-map-pin-line"></i> Delivery Address</label>
+                  <input type="text" id="signupAddress" class="form-input" placeholder="Shelter address">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Capacity (Meals)</label>
+                    <input type="number" id="signupCapacity" class="form-input" placeholder="150">
+                  </div>
+                  <div class="form-group">
+                    <label>Priority</label>
+                    <select id="signupPriority" class="form-select">
+                      <option value="Low">Low</option>
+                      <option value="Medium" selected>Medium</option>
+                      <option value="High">High</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary width-full">Create Mobile Account <i class="ri-user-add-line"></i></button>
+            </form>
+
+            <!-- Demo Quick Login Helper -->
+            <div class="demo-quick-box">
+              <div class="demo-title"><i class="ri-flashlight-line"></i> Quick Demo Logins</div>
+              <div class="demo-buttons">
+                <button class="btn btn-sm btn-subtle" onclick="app.quickLogin('Fresh Bites Bakery', 'donor123', 'donor')">Demo Donor</button>
+                <button class="btn btn-sm btn-subtle" onclick="app.quickLogin('Hope Haven Shelter', 'donor123', 'ngo')">Demo NGO</button>
+                <button class="btn btn-sm btn-subtle" onclick="app.quickLogin('Alex Rivera', 'donor123', 'volunteer')">Demo Volunteer</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. DONOR DASHBOARD VIEW -->
+        <section class="app-view" id="view-donor">
+          <!-- Donor Stats -->
+          <div class="dashboard-stats-row">
+            <div class="mini-stat-card">
+              <span class="stat-num" id="donorStatTotal">0</span>
+              <span class="stat-label">Total Posted</span>
+            </div>
+            <div class="mini-stat-card warning">
+              <span class="stat-num" id="donorStatPending">0</span>
+              <span class="stat-label">Pending</span>
+            </div>
+            <div class="mini-stat-card info">
+              <span class="stat-num" id="donorStatAccepted">0</span>
+              <span class="stat-label">Accepted</span>
+            </div>
+            <div class="mini-stat-card success">
+              <span class="stat-num" id="donorStatCompleted">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+            <div class="mini-stat-card danger">
+              <span class="stat-num" id="donorStatWasted">0</span>
+              <span class="stat-label">Wasted</span>
+            </div>
+          </div>
+
+          <!-- Donor Segment Tabs -->
+          <div class="segmented-tabs">
+            <button class="segment-btn active" onclick="app.switchDonorSubTab('post', this)">
+              <i class="ri-add-circle-line"></i> Donate Food
+            </button>
+            <button class="segment-btn" onclick="app.switchDonorSubTab('journey', this)">
+              <i class="ri-route-line"></i> My Donations
+            </button>
+            <button class="segment-btn" onclick="app.switchDonorSubTab('wasted', this)">
+              <i class="ri-time-line"></i> Wasted
+            </button>
+            <button class="segment-btn" onclick="app.switchDonorSubTab('feedback', this)">
+              <i class="ri-star-line"></i> Reviews
+            </button>
+            <button class="segment-btn" onclick="app.switchDonorSubTab('profile', this)">
+              <i class="ri-user-settings-line"></i> Profile
+            </button>
+          </div>
+
+          <!-- Donor Sub-tab 1: Post Donation Form -->
+          <div class="subtab-content active" id="donor-sub-post">
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-restaurant-2-fill icon-accent"></i> Post Surplus Food Donation
+              </div>
+              <form id="postDonationForm" onsubmit="app.submitDonation(event)">
+                <div class="form-group">
+                  <label>Food Item / Description</label>
+                  <input type="text" id="postFoodType" class="form-input" placeholder="e.g. 50 Trays of Fresh Rice & Vegetables" required>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Quantity (Meals)</label>
+                    <input type="number" id="postQuantity" class="form-input" placeholder="50" min="1" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Available Until (Time)</label>
+                    <input type="time" id="postTime" class="form-input" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Date of Donation</label>
+                  <input type="date" id="postDate" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary width-full">
+                  Post Donation Now <i class="ri-send-plane-fill"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Donor Sub-tab 2: Journey Tracking Feed -->
+          <div class="subtab-content" id="donor-sub-journey">
+            <div class="section-title-bar">
+              <h4>Live Donation Journey</h4>
+              <span class="refresh-indicator" onclick="app.loadDonorDonations()"><i class="ri-refresh-line"></i> Refresh</span>
+            </div>
+            <div id="donorDonationsList" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Donor Sub-tab 3: Wasted Log -->
+          <div class="subtab-content" id="donor-sub-wasted">
+            <div class="section-title-bar">
+              <h4>Wasted / Expired Food Log</h4>
+            </div>
+            <div id="donorWastedList" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Donor Sub-tab 4: Feedback Received -->
+          <div class="subtab-content" id="donor-sub-feedback">
+            <div class="section-title-bar">
+              <h4>NGO Reviews & Hygiene Rating</h4>
+            </div>
+            <div id="donorFeedbackList" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Donor Sub-tab 5: Profile -->
+          <div class="subtab-content" id="donor-sub-profile">
+            <div class="content-card">
+              <div class="card-title"><i class="ri-user-3-fill icon-accent"></i> Donor Profile</div>
+              <form id="donorProfileForm" onsubmit="app.saveDonorProfile(event)">
+                <div class="form-group">
+                  <label>Business / Donor Name</label>
+                  <input type="text" id="donorProfName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label>Contact Number</label>
+                  <input type="tel" id="donorProfContact" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label>Address</label>
+                  <input type="text" id="donorProfAddress" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" id="donorProfEmail" class="form-input">
+                </div>
+                <div class="hygiene-badge-display">
+                  <span>Calculated Hygiene Score:</span>
+                  <div class="star-rating-display" id="donorHygieneDisplay">⭐ 4.8 / 5.0</div>
+                </div>
+                <button type="submit" class="btn btn-primary width-full">Save Profile Changes</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. NGO DASHBOARD VIEW -->
+        <section class="app-view" id="view-ngo">
+          <!-- NGO Stats -->
+          <div class="dashboard-stats-row">
+            <div class="mini-stat-card warning">
+              <span class="stat-num" id="ngoStatAvailable">0</span>
+              <span class="stat-label">Available</span>
+            </div>
+            <div class="mini-stat-card info">
+              <span class="stat-num" id="ngoStatPending">0</span>
+              <span class="stat-label">Incoming</span>
+            </div>
+            <div class="mini-stat-card success">
+              <span class="stat-num" id="ngoStatDelivered">0</span>
+              <span class="stat-label">Received</span>
+            </div>
+            <div class="mini-stat-card">
+              <span class="stat-num" id="ngoStatTotal">0</span>
+              <span class="stat-label">Total Orders</span>
+            </div>
+          </div>
+
+          <!-- NGO Segment Tabs -->
+          <div class="segmented-tabs">
+            <button class="segment-btn active" onclick="app.switchNgoSubTab('feed', this)">
+              <i class="ri-restaurant-line"></i> Available Feed
+            </button>
+            <button class="segment-btn" onclick="app.switchNgoSubTab('orders', this)">
+              <i class="ri-truck-line"></i> My Orders
+            </button>
+            <button class="segment-btn" onclick="app.switchNgoSubTab('feedback', this)">
+              <i class="ri-star-smile-line"></i> Feedback
+            </button>
+            <button class="segment-btn" onclick="app.switchNgoSubTab('wasted', this)">
+              <i class="ri-delete-bin-line"></i> Wasted
+            </button>
+            <button class="segment-btn" onclick="app.switchNgoSubTab('profile', this)">
+              <i class="ri-building-4-line"></i> Profile
+            </button>
+          </div>
+
+          <!-- NGO Sub-tab 1: Available Donations Feed -->
+          <div class="subtab-content active" id="ngo-sub-feed">
+            <div class="section-title-bar">
+              <h4>Surplus Food Live Feed</h4>
+              <span class="refresh-indicator" onclick="app.loadNgoAvailable()"><i class="ri-refresh-line"></i> Refresh</span>
+            </div>
+            <div id="ngoAvailableFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- NGO Sub-tab 2: NGO Orders & Deliveries -->
+          <div class="subtab-content" id="ngo-sub-orders">
+            <div class="section-title-bar">
+              <h4>Incoming & Past Orders</h4>
+            </div>
+            <div id="ngoOrdersFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- NGO Sub-tab 3: Feedback Given Log -->
+          <div class="subtab-content" id="ngo-sub-feedback">
+            <div class="section-title-bar">
+              <h4>Feedback Submitted to Donors</h4>
+            </div>
+            <div id="ngoFeedbackGivenFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- NGO Sub-tab 4: Wasted Log -->
+          <div class="subtab-content" id="ngo-sub-wasted">
+            <div class="section-title-bar">
+              <h4>System Wasted Donations Log</h4>
+            </div>
+            <div id="ngoWastedFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- NGO Sub-tab 5: Profile -->
+          <div class="subtab-content" id="ngo-sub-profile">
+            <div class="content-card">
+              <div class="card-title"><i class="ri-building-4-fill icon-accent"></i> NGO Profile Settings</div>
+              <form id="ngoProfileForm" onsubmit="app.saveNgoProfile(event)">
+                <div class="form-group">
+                  <label>NGO / Shelter Name</label>
+                  <input type="text" id="ngoProfName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label>Contact Number</label>
+                  <input type="tel" id="ngoProfContact" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label>Delivery Address</label>
+                  <input type="text" id="ngoProfAddress" class="form-input">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Capacity (Meals)</label>
+                    <input type="number" id="ngoProfCapacity" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label>Priority Level</label>
+                    <select id="ngoProfPriority" class="form-select">
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary width-full">Save NGO Settings</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. VOLUNTEER DASHBOARD VIEW -->
+        <section class="app-view" id="view-volunteer">
+          <!-- Volunteer Stats -->
+          <div class="dashboard-stats-row">
+            <div class="mini-stat-card">
+              <span class="stat-num" id="volStatTotal">0</span>
+              <span class="stat-label">Total Pickups</span>
+            </div>
+            <div class="mini-stat-card warning">
+              <span class="stat-num" id="volStatPending">0</span>
+              <span class="stat-label">Pending</span>
+            </div>
+            <div class="mini-stat-card info">
+              <span class="stat-num" id="volStatProgress">0</span>
+              <span class="stat-label">In Progress</span>
+            </div>
+            <div class="mini-stat-card success">
+              <span class="stat-num" id="volStatDelivered">0</span>
+              <span class="stat-label">Delivered</span>
+            </div>
+          </div>
+
+          <!-- Volunteer Segment Tabs -->
+          <div class="segmented-tabs">
+            <button class="segment-btn active" onclick="app.switchVolSubTab('open', this)">
+              <i class="ri-navigation-line"></i> Open Pickups
+            </button>
+            <button class="segment-btn" onclick="app.switchVolSubTab('mine', this)">
+              <i class="ri-task-line"></i> My Tasks
+            </button>
+            <button class="segment-btn" onclick="app.switchVolSubTab('wasted', this)">
+              <i class="ri-delete-bin-line"></i> Wasted Log
+            </button>
+            <button class="segment-btn" onclick="app.switchVolSubTab('profile', this)">
+              <i class="ri-user-fill"></i> Profile
+            </button>
+          </div>
+
+          <!-- Vol Sub-tab 1: Open Pickups Feed -->
+          <div class="subtab-content active" id="vol-sub-open">
+            <div class="section-title-bar">
+              <h4>Unassigned Pickup Tasks</h4>
+              <span class="refresh-indicator" onclick="app.loadVolPickups()"><i class="ri-refresh-line"></i> Refresh</span>
+            </div>
+            <div id="volOpenFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Vol Sub-tab 2: My Claimed Pickups -->
+          <div class="subtab-content" id="vol-sub-mine">
+            <div class="section-title-bar">
+              <h4>My Active & Past Tasks</h4>
+            </div>
+            <div id="volMyFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Vol Sub-tab 3: Wasted Log -->
+          <div class="subtab-content" id="vol-sub-wasted">
+            <div class="section-title-bar">
+              <h4>Wasted / Expired Log</h4>
+            </div>
+            <div id="volWastedFeed" class="cards-feed">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Vol Sub-tab 4: Profile -->
+          <div class="subtab-content" id="vol-sub-profile">
+            <div class="content-card">
+              <div class="card-title"><i class="ri-user-settings-fill icon-accent"></i> Volunteer Profile</div>
+              <form id="volProfileForm" onsubmit="app.saveVolProfile(event)">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" id="volProfName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label>Contact Phone</label>
+                  <input type="tel" id="volProfContact" class="form-input">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Vehicle Type</label>
+                    <select id="volProfVehicle" class="form-select">
+                      <option value="Bike">Bike / Bicycle</option>
+                      <option value="Scooter">Scooter / Motorbike</option>
+                      <option value="Car">Car</option>
+                      <option value="Van">Van / Truck</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select id="volProfStatus" class="form-select">
+                      <option value="Available">Available</option>
+                      <option value="Busy">Busy</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary width-full">Save Volunteer Profile</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Bottom Native Mobile Navigation Bar -->
+      <nav class="mobile-bottom-nav">
+        <button class="nav-item active" id="navHomeBtn" onclick="app.navigateBottomNav('home')">
+          <i class="ri-home-5-fill"></i>
+          <span>Home</span>
+        </button>
+        <button class="nav-item" id="navPrimaryBtn" onclick="app.navigateBottomNav('primary')">
+          <i class="ri-restaurant-2-fill"></i>
+          <span id="navPrimaryLabel">Actions</span>
+        </button>
+        <button class="nav-item" id="navSecondaryBtn" onclick="app.navigateBottomNav('secondary')">
+          <i class="ri-history-line"></i>
+          <span id="navSecondaryLabel">History</span>
+        </button>
+        <button class="nav-item" id="navProfileBtn" onclick="app.navigateBottomNav('profile')">
+          <i class="ri-user-3-fill"></i>
+          <span>Profile</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+  <!-- MODAL 1: NGO Partial / Full Accept Modal -->
+  <div class="modal-backdrop" id="acceptModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Accept Food Donation</h3>
+        <button class="modal-close" onclick="app.closeModal('acceptModal')"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <p id="acceptModalText">Specify how many meals your NGO would like to claim.</p>
+        <div class="form-group">
+          <label>Quantity Available: <strong id="acceptModalAvail">0</strong> meals</label>
+          <input type="number" id="acceptQtyInput" class="form-input" placeholder="Enter quantity to accept">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeModal('acceptModal')">Cancel</button>
+        <button class="btn btn-primary" id="confirmAcceptBtn">Confirm Accept <i class="ri-check-line"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: NGO Feedback Submission Modal -->
+  <div class="modal-backdrop" id="feedbackModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Submit Rating & Feedback</h3>
+        <button class="modal-close" onclick="app.closeModal('feedbackModal')"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Overall Donor Rating (1 to 5 Stars)</label>
+          <div class="star-rating-selector" id="starRatingBox">
+            <i class="ri-star-fill star-item" data-val="1"></i>
+            <i class="ri-star-fill star-item" data-val="2"></i>
+            <i class="ri-star-fill star-item" data-val="3"></i>
+            <i class="ri-star-fill star-item" data-val="4"></i>
+            <i class="ri-star-fill star-item active" data-val="5"></i>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Hygiene Score (1 to 5)</label>
+          <select id="hygieneScoreInput" class="form-select">
+            <option value="5" selected>5 - Excellent Cleanliness</option>
+            <option value="4">4 - Good Hygiene</option>
+            <option value="3">3 - Moderate</option>
+            <option value="2">2 - Poor</option>
+            <option value="1">1 - Unsatisfactory</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Comments / Review</label>
+          <textarea id="feedbackCommentInput" class="form-input" rows="3" placeholder="Write feedback regarding food freshness, packaging, and donor cooperation..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeModal('feedbackModal')">Cancel</button>
+        <button class="btn btn-primary" id="confirmFeedbackBtn">Submit Feedback <i class="ri-star-fill"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Volunteer OTP Confirmation Modal -->
+  <div class="modal-backdrop" id="otpModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Verify Delivery OTP</h3>
+        <button class="modal-close" onclick="app.closeModal('otpModal')"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>Please request the 4-digit OTP code from the Donor/Receiver to confirm completed delivery.</p>
+        <div class="form-group">
+          <label>Enter 4-Digit Security OTP</label>
+          <input type="text" id="otpCodeInput" class="form-input otp-input-large" placeholder="1234" maxlength="4">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeModal('otpModal')">Cancel</button>
+        <button class="btn btn-success" id="confirmOtpBtn">Verify & Complete <i class="ri-shield-check-fill"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Mobile App JS -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
