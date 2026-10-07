@@ -37,12 +37,12 @@
       <!-- App Header Bar -->
       <header class="app-header">
         <div class="header-brand" id="brandBtn">
-          <div class="brand-logo-icon">
-            <i class="ri-restaurant-2-fill"></i>
+          <div class="brand-logo-icon" id="headerLogoBox">
+            <i class="ri-leaf-fill" id="headerLogoIcon"></i>
           </div>
           <div class="brand-text">
             <span class="brand-title">FoodBridge</span>
-            <span class="brand-tagline">Mobile Platform</span>
+            <span class="brand-tagline" id="headerBrandTagline">Zero Surplus Waste</span>
           </div>
         </div>
         <div class="header-actions">
@@ -55,7 +55,7 @@
           <div class="user-chip" id="userChip" style="display: none;">
             <span class="user-role-badge" id="userRoleBadge">Donor</span>
             <span class="user-name" id="userNameText">Alex</span>
-            <button class="logout-btn" id="logoutBtn" title="Logout"><i class="ri-logout-box-r-line"></i></button>
+            <button class="logout-btn" id="logoutBtn" title="Logout"><i class="ri-logout-box-r-line"></i> Logout</button>
           </div>
         </div>
       </header>
@@ -172,6 +172,15 @@
 
         <!-- 2. AUTH VIEW -->
         <section class="app-view" id="view-auth">
+          <div class="workspace-header-banner">
+            <div class="workspace-logo-badge auth" id="authRoleLogoBox">
+              <i class="ri-shopping-bag-3-fill" id="authRoleLogoIcon"></i>
+            </div>
+            <div class="workspace-meta">
+              <h3 id="authBannerTitle">Donor Access</h3>
+              <p id="authBannerSubtitle">Sign in or create account for Food Donors</p>
+            </div>
+          </div>
           <div class="auth-container">
             <div class="auth-header">
               <h2 id="authTitle">Sign In</h2>
@@ -268,6 +277,16 @@
 
         <!-- 3. DONOR DASHBOARD VIEW -->
         <section class="app-view" id="view-donor">
+          <div class="workspace-header-banner">
+            <div class="workspace-logo-badge donor">
+              <i class="ri-shopping-bag-3-fill"></i>
+            </div>
+            <div class="workspace-meta">
+              <h3>Food Donor Workspace</h3>
+              <p>Post surplus donations, manage inventory & track delivery journey</p>
+            </div>
+          </div>
+
           <!-- Donor Stats -->
           <div class="dashboard-stats-row">
             <div class="mini-stat-card">
@@ -399,7 +418,8 @@
                   <span>Calculated Hygiene Score:</span>
                   <div class="star-rating-display" id="donorHygieneDisplay">⭐ 4.8 / 5.0</div>
                 </div>
-                <button type="submit" class="btn btn-primary width-full">Save Profile Changes</button>
+                <button type="submit" class="btn btn-primary width-full" style="margin-bottom: 10px;">Save Profile Changes</button>
+                <button type="button" class="btn btn-outline width-full btn-logout-danger" onclick="app.logout()"><i class="ri-logout-box-r-line"></i> Log Out of Account</button>
               </form>
             </div>
           </div>
@@ -407,6 +427,16 @@
 
         <!-- 4. NGO DASHBOARD VIEW -->
         <section class="app-view" id="view-ngo">
+          <div class="workspace-header-banner">
+            <div class="workspace-logo-badge ngo">
+              <i class="ri-heart-pulse-fill"></i>
+            </div>
+            <div class="workspace-meta">
+              <h3>NGO & Shelter Portal</h3>
+              <p>Claim available food donations, manage deliveries & rate donors</p>
+            </div>
+          </div>
+
           <!-- NGO Stats -->
           <div class="dashboard-stats-row">
             <div class="mini-stat-card warning">
@@ -518,7 +548,8 @@
                     </select>
                   </div>
                 </div>
-                <button type="submit" class="btn btn-primary width-full">Save NGO Settings</button>
+                <button type="submit" class="btn btn-primary width-full" style="margin-bottom: 10px;">Save NGO Settings</button>
+                <button type="button" class="btn btn-outline width-full btn-logout-danger" onclick="app.logout()"><i class="ri-logout-box-r-line"></i> Log Out of Account</button>
               </form>
             </div>
           </div>
@@ -526,6 +557,16 @@
 
         <!-- 5. VOLUNTEER DASHBOARD VIEW -->
         <section class="app-view" id="view-volunteer">
+          <div class="workspace-header-banner">
+            <div class="workspace-logo-badge volunteer">
+              <i class="ri-motorbike-fill"></i>
+            </div>
+            <div class="workspace-meta">
+              <h3>Delivery Volunteer Hub</h3>
+              <p>Claim pickup tasks, verify delivery security OTP & log completed rescues</p>
+            </div>
+          </div>
+
           <!-- Volunteer Stats -->
           <div class="dashboard-stats-row">
             <div class="mini-stat-card">
@@ -624,7 +665,8 @@
                     </select>
                   </div>
                 </div>
-                <button type="submit" class="btn btn-primary width-full">Save Volunteer Profile</button>
+                <button type="submit" class="btn btn-primary width-full" style="margin-bottom: 10px;">Save Volunteer Profile</button>
+                <button type="button" class="btn btn-outline width-full btn-logout-danger" onclick="app.logout()"><i class="ri-logout-box-r-line"></i> Log Out of Account</button>
               </form>
             </div>
           </div>
@@ -639,11 +681,11 @@
           <span>Home</span>
         </button>
         <button class="nav-item" id="navPrimaryBtn" onclick="app.navigateBottomNav('primary')">
-          <i class="ri-restaurant-2-fill"></i>
+          <i class="ri-restaurant-2-fill" id="navPrimaryIcon"></i>
           <span id="navPrimaryLabel">Actions</span>
         </button>
         <button class="nav-item" id="navSecondaryBtn" onclick="app.navigateBottomNav('secondary')">
-          <i class="ri-history-line"></i>
+          <i class="ri-history-line" id="navSecondaryIcon"></i>
           <span id="navSecondaryLabel">History</span>
         </button>
         <button class="nav-item" id="navProfileBtn" onclick="app.navigateBottomNav('profile')">

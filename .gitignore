@@ -8,3 +8,4 @@ __pycache__/
 android-project/.gradle/
 android-project/build/
 android-project/app/build/
+android-project/local.properties

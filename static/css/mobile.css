@@ -63,13 +63,14 @@
 }
 
 body {
-  background: #060911;
+  background: var(--bg-main);
   color: var(--text-main);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ==========================================================================
@@ -113,10 +114,11 @@ body {
 .phone-notch-bar {
   height: 36px;
   background: var(--bg-main);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 20px;
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
@@ -128,8 +130,12 @@ body {
 .notch-camera {
   width: 70px;
   height: 14px;
-  background: #000;
+  background: #0f172a;
   border-radius: 12px;
+}
+
+[data-theme="light"] .notch-camera {
+  background: #cbd5e1;
 }
 
 .notch-icons {
@@ -143,13 +149,13 @@ body {
    ========================================================================== */
 
 .app-header {
-  height: 58px;
+  height: 60px;
   background: var(--bg-main);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 18px;
+  padding: 0 12px;
   flex-shrink: 0;
   z-index: 9;
 }
@@ -157,55 +163,76 @@ body {
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .brand-logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background: linear-gradient(135deg, var(--primary), #047857);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   box-shadow: 0 4px 12px var(--primary-glow);
+  flex-shrink: 0;
+  transition: background 0.3s ease;
 }
 
 .brand-text {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .brand-title {
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 17px;
+  font-size: 16px;
   letter-spacing: -0.3px;
-  background: linear-gradient(135deg, #fff, #94a3b8);
+  color: var(--text-main);
+  display: block;
+}
+
+[data-theme="dark"] .brand-title {
+  background: linear-gradient(135deg, #ffffff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .brand-title {
+  background: linear-gradient(135deg, #0f172a, #334155);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .brand-tagline {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--primary);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
+  flex-shrink: 0;
 }
 
 .header-icon-btn {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid var(--border-color);
   background: var(--bg-card);
@@ -213,9 +240,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .header-icon-btn:hover {
@@ -226,39 +254,111 @@ body {
 .user-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 20px;
-  padding: 4px 10px;
-  font-size: 12px;
+  padding: 3px 6px 3px 8px;
+  font-size: 11px;
+  max-width: 175px;
+  flex-shrink: 0;
 }
 
 .user-role-badge {
   background: var(--primary);
   color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 8px;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .user-name {
   font-weight: 600;
-  max-width: 80px;
+  max-width: 55px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text-main);
+  flex-shrink: 1;
 }
 
 .logout-btn {
-  background: none;
-  border: none;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.3);
   color: var(--rose);
   cursor: pointer;
-  font-size: 14px;
-  padding: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: var(--rose);
+  color: #ffffff;
+  border-color: var(--rose);
+}
+
+.btn-logout-danger {
+  border-color: rgba(244, 63, 94, 0.4);
+  color: var(--rose);
+}
+
+.btn-logout-danger:hover {
+  background: var(--rose);
+  color: #fff;
+}
+
+/* Workspace Section Banner Header */
+.workspace-header-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workspace-logo-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.workspace-logo-badge.donor { background: linear-gradient(135deg, #10b981, #047857); }
+.workspace-logo-badge.ngo { background: linear-gradient(135deg, #6366f1, #4338ca); }
+.workspace-logo-badge.volunteer { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.workspace-logo-badge.auth { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+
+.workspace-meta h3 {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.workspace-meta p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
 }
 
 /* ==========================================================================

@@ -119,6 +119,7 @@ const app = {
       target.classList.add('active');
       this.activeView = viewId;
     }
+    this.updateHeaderBranding();
     this.updateBottomNavState();
   },
 
@@ -144,6 +145,7 @@ const app = {
 
     const ngoExtra = document.getElementById('ngoExtraFields');
     if (ngoExtra) ngoExtra.style.display = (role === 'ngo') ? 'block' : 'none';
+    this.updateHeaderBranding();
   },
 
   switchAuthMode(mode) {
@@ -156,50 +158,146 @@ const app = {
     document.getElementById('authTitle').textContent = (mode === 'login') ? 'Sign In' : 'Create Account';
   },
 
+  // Dynamic Header Branding Updates per Page & Role
+  updateHeaderBranding() {
+    const logoIcon = document.getElementById('headerLogoIcon');
+    const logoBox = document.getElementById('headerLogoBox');
+    const tagline = document.getElementById('headerBrandTagline');
+
+    if (!logoIcon || !tagline) return;
+
+    if (this.activeView === 'view-landing') {
+      logoIcon.className = 'ri-leaf-fill';
+      if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+      tagline.textContent = 'Zero Surplus Waste';
+    } else if (this.activeView === 'view-auth') {
+      if (this.authRole === 'donor') {
+        logoIcon.className = 'ri-shopping-bag-3-fill';
+        if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        tagline.textContent = 'Donor Account';
+      } else if (this.authRole === 'ngo') {
+        logoIcon.className = 'ri-heart-pulse-fill';
+        if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #6366f1, #4338ca)';
+        tagline.textContent = 'NGO Portal';
+      } else if (this.authRole === 'volunteer') {
+        logoIcon.className = 'ri-motorbike-fill';
+        if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        tagline.textContent = 'Volunteer Hub';
+      }
+    } else if (this.activeView === 'view-donor') {
+      logoIcon.className = 'ri-shopping-bag-3-fill';
+      if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      tagline.textContent = 'Donor Workspace';
+    } else if (this.activeView === 'view-ngo') {
+      logoIcon.className = 'ri-heart-pulse-fill';
+      if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #6366f1, #4338ca)';
+      tagline.textContent = 'NGO Workspace';
+    } else if (this.activeView === 'view-volunteer') {
+      logoIcon.className = 'ri-motorbike-fill';
+      if (logoBox) logoBox.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+      tagline.textContent = 'Volunteer Workspace';
+    }
+
+    // Also sync Auth section banner logo badge if on view-auth
+    const authBox = document.getElementById('authRoleLogoBox');
+    const authIcon = document.getElementById('authRoleLogoIcon');
+    const authTitle = document.getElementById('authBannerTitle');
+    const authSub = document.getElementById('authBannerSubtitle');
+
+    if (authBox && authIcon && authTitle) {
+      if (this.authRole === 'donor') {
+        authBox.className = 'workspace-logo-badge donor';
+        authIcon.className = 'ri-shopping-bag-3-fill';
+        authTitle.textContent = 'Donor Portal';
+        if (authSub) authSub.textContent = 'Sign in or create account to donate surplus food';
+      } else if (this.authRole === 'ngo') {
+        authBox.className = 'workspace-logo-badge ngo';
+        authIcon.className = 'ri-heart-pulse-fill';
+        authTitle.textContent = 'NGO Portal';
+        if (authSub) authSub.textContent = 'Sign in or register your relief shelter & NGO';
+      } else if (this.authRole === 'volunteer') {
+        authBox.className = 'workspace-logo-badge volunteer';
+        authIcon.className = 'ri-motorbike-fill';
+        authTitle.textContent = 'Volunteer Hub';
+        if (authSub) authSub.textContent = 'Sign in or sign up to deliver food packages';
+      }
+    }
+  },
+
   updateBottomNavState() {
     document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
 
     const primaryLabel = document.getElementById('navPrimaryLabel');
     const secondaryLabel = document.getElementById('navSecondaryLabel');
+    const primaryIcon = document.getElementById('navPrimaryIcon');
+    const secondaryIcon = document.getElementById('navSecondaryIcon');
+
+    let activeNavId = 'navHomeBtn';
 
     if (this.currentUser) {
-      if (this.currentUser.role === 'donor') {
+      const role = this.currentUser.role;
+      const subTab = this.activeSubTab[role] || '';
+
+      if (role === 'donor') {
         if (primaryLabel) primaryLabel.textContent = 'Donate';
+        if (primaryIcon) primaryIcon.className = 'ri-add-circle-fill';
         if (secondaryLabel) secondaryLabel.textContent = 'Journey';
-      } else if (this.currentUser.role === 'ngo') {
+        if (secondaryIcon) secondaryIcon.className = 'ri-route-fill';
+
+        if (this.activeView === 'view-donor') {
+          if (subTab === 'profile') activeNavId = 'navProfileBtn';
+          else if (subTab === 'journey') activeNavId = 'navSecondaryBtn';
+          else activeNavId = 'navPrimaryBtn';
+        }
+      } else if (role === 'ngo') {
         if (primaryLabel) primaryLabel.textContent = 'Feed';
+        if (primaryIcon) primaryIcon.className = 'ri-restaurant-2-fill';
         if (secondaryLabel) secondaryLabel.textContent = 'Orders';
-      } else if (this.currentUser.role === 'volunteer') {
+        if (secondaryIcon) secondaryIcon.className = 'ri-truck-fill';
+
+        if (this.activeView === 'view-ngo') {
+          if (subTab === 'profile') activeNavId = 'navProfileBtn';
+          else if (subTab === 'orders') activeNavId = 'navSecondaryBtn';
+          else activeNavId = 'navPrimaryBtn';
+        }
+      } else if (role === 'volunteer') {
         if (primaryLabel) primaryLabel.textContent = 'Pickups';
+        if (primaryIcon) primaryIcon.className = 'ri-navigation-fill';
         if (secondaryLabel) secondaryLabel.textContent = 'My Tasks';
+        if (secondaryIcon) secondaryIcon.className = 'ri-task-fill';
+
+        if (this.activeView === 'view-volunteer') {
+          if (subTab === 'profile') activeNavId = 'navProfileBtn';
+          else if (subTab === 'mine') activeNavId = 'navSecondaryBtn';
+          else activeNavId = 'navPrimaryBtn';
+        }
       }
     } else {
-      if (primaryLabel) primaryLabel.textContent = 'Actions';
-      if (secondaryLabel) secondaryLabel.textContent = 'Feed';
+      if (primaryLabel) primaryLabel.textContent = 'Sign In';
+      if (primaryIcon) primaryIcon.className = 'ri-login-circle-fill';
+      if (secondaryLabel) secondaryLabel.textContent = 'Explore';
+      if (secondaryIcon) secondaryIcon.className = 'ri-compass-3-fill';
+
+      if (this.activeView === 'view-auth') activeNavId = 'navPrimaryBtn';
+      else if (this.activeView === 'view-landing') activeNavId = 'navHomeBtn';
     }
 
     if (this.activeView === 'view-landing') {
-      document.getElementById('navHomeBtn')?.classList.add('active');
-    } else if (this.activeView.startsWith('view-')) {
-      document.getElementById('navPrimaryBtn')?.classList.add('active');
+      activeNavId = 'navHomeBtn';
     }
+
+    document.getElementById(activeNavId)?.classList.add('active');
   },
 
   navigateBottomNav(navType) {
     if (navType === 'home') {
       this.showView('view-landing');
-    } else if (navType === 'profile') {
-      if (this.currentUser) {
-        this.showView(`view-${this.currentUser.role}`);
-        if (this.currentUser.role === 'donor') this.switchDonorSubTab('profile');
-        if (this.currentUser.role === 'ngo') this.switchNgoSubTab('profile');
-        if (this.currentUser.role === 'volunteer') this.switchVolSubTab('profile');
-      } else {
-        this.showAuthView('donor');
-      }
     } else if (navType === 'primary') {
       if (this.currentUser) {
         this.showView(`view-${this.currentUser.role}`);
+        if (this.currentUser.role === 'donor') this.switchDonorSubTab('post');
+        if (this.currentUser.role === 'ngo') this.switchNgoSubTab('feed');
+        if (this.currentUser.role === 'volunteer') this.switchVolSubTab('open');
       } else {
         this.showAuthView('donor');
       }
@@ -209,6 +307,15 @@ const app = {
         if (this.currentUser.role === 'donor') this.switchDonorSubTab('journey');
         if (this.currentUser.role === 'ngo') this.switchNgoSubTab('orders');
         if (this.currentUser.role === 'volunteer') this.switchVolSubTab('mine');
+      } else {
+        this.showView('view-landing');
+      }
+    } else if (navType === 'profile') {
+      if (this.currentUser) {
+        this.showView(`view-${this.currentUser.role}`);
+        if (this.currentUser.role === 'donor') this.switchDonorSubTab('profile');
+        if (this.currentUser.role === 'ngo') this.switchNgoSubTab('profile');
+        if (this.currentUser.role === 'volunteer') this.switchVolSubTab('profile');
       } else {
         this.showAuthView('donor');
       }
@@ -373,6 +480,7 @@ const app = {
     if (subTab === 'wasted') this.loadDonorWasted();
     if (subTab === 'feedback') this.loadDonorFeedback();
     if (subTab === 'profile') this.loadDonorProfile();
+    this.updateBottomNavState();
   },
 
   async loadDonorStats() {
@@ -587,6 +695,7 @@ const app = {
     if (subTab === 'feedback') this.loadNgoFeedbackGiven();
     if (subTab === 'wasted') this.loadNgoWasted();
     if (subTab === 'profile') this.loadNgoProfile();
+    this.updateBottomNavState();
   },
 
   async loadNgoStats() {
@@ -853,6 +962,7 @@ const app = {
     if (subTab === 'mine') this.loadVolPickups();
     if (subTab === 'wasted') this.loadVolWasted();
     if (subTab === 'profile') this.loadVolProfile();
+    this.updateBottomNavState();
   },
 
   async loadVolStats() {
