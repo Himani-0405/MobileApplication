@@ -13,8 +13,6 @@ def init_db():
     conn = get_db()
     cur = conn.cursor()
     
-    # Enable WAL mode for better concurrency
-    cur.execute("PRAGMA journal_mode=WAL")
     
     # 1. Donor Table (original columns preserved, new ones added via ALTER TABLE below)
     cur.execute('''
