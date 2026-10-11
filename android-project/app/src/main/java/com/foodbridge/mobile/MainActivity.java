@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeLayout;
     private ProgressBar mProgressBar;
 
-    // Configured for Option 2: Local Network IP + Online Fallback
-    public static final String LOCAL_URL = "http://10.1.26.51:5000";
+    // Configured for Local Wi-Fi Network IP (Your Mac)
+    public static final String LOCAL_URL = "http://192.168.1.154:5000";
     public static final String SERVER_URL = LOCAL_URL;
 
     @Override
@@ -86,6 +86,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 mProgressBar.setProgress(newProgress);
+            }
+        });
+
+        // Configure DownloadListener for PDF Certificate downloads
+        mWebView.setDownloadListener(new android.webkit.DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+                try {
+                    android.app.DownloadManager.Request request = new android.app.DownloadManager.Request(android.net.Uri.parse(url));
+                    request.setMimeType(mimeType);
+                    String cookies = CookieManager.getInstance().getCookie(url);
+                    request.addRequestHeader("cookie", cookies);
+                    request.addRequestHeader("User-Agent", userAgent);
+                    request.setDescription("Downloading FoodBridge Appreciation Certificate...");
+                    String filename = android.webkit.URLUtil.guessFileName(url, contentDisposition, mimeType);
+                    if (filename == null || !filename.toLowerCase().endsWith(".pdf")) {
+                        filename = "FoodBridge_Certificate.pdf";
+                    }
+                    request.setTitle(filename);
+                    request.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, filename);
+                    android.app.DownloadManager dm = (android.app.DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                    if (dm != null) {
+                        dm.enqueue(request);
+                        Toast.makeText(MainActivity.this, "Downloading certificate to Downloads folder...", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    try {
+                        android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+                        intent.setData(android.net.Uri.parse(url));
+                        startActivity(intent);
+                    } catch (Exception ex) {
+                        Toast.makeText(MainActivity.this, "Download error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 

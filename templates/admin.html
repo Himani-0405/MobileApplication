@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodBridge — Admin Verification Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/mobile.css">
+  <style>
+    body { display: block; min-height: 100vh; padding: 0; background: var(--bg-main); }
+    .admin-shell { max-width: 1100px; margin: 0 auto; padding: 0 16px 40px; }
+    .admin-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 0 24px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;
+    }
+    .admin-brand { display: flex; align-items: center; gap: 12px; }
+    .admin-logo { width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, #f43f5e, #dc2626);
+      display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; }
+    .admin-title { font-family: var(--font-heading); font-size: 20px; font-weight: 700; }
+    .admin-subtitle { font-size: 12px; color: var(--text-muted); }
+    .admin-login-wrap { max-width: 380px; margin: 80px auto; }
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 8px 18px; border-radius: 10px; border: 1px solid var(--border-color);
+      background: var(--bg-card); color: var(--text-muted); font-size: 13px; cursor: pointer;
+      font-weight: 600; transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .tab-btn:hover:not(.active) { background: var(--bg-card-hover); color: var(--text-main); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th { background: var(--bg-card); color: var(--text-muted);
+      padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .admin-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color);
+      vertical-align: top; }
+    .admin-table tr:hover td { background: var(--bg-card-hover); }
+    .status-badge {
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block;
+    }
+    .status-Pending { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .status-Verified { background: rgba(16,185,129,0.15); color: var(--primary); }
+    .status-Rejected { background: rgba(244,63,94,0.15); color: var(--rose); }
+    .btn-approve { background: var(--primary); color: #fff; padding: 5px 12px;
+      border-radius: 8px; border: none; font-size: 12px; cursor: pointer; font-weight: 600; }
+    .btn-reject { background: var(--rose); color: #fff; padding: 5px 12px;
+      border-radius: 8px; border: none; font-size: 12px; cursor: pointer; font-weight: 600; margin-left: 4px; }
+    .btn-doc { background: var(--secondary); color: #fff; padding: 4px 10px;
+      border-radius: 6px; border: none; font-size: 11px; cursor: pointer; }
+    .rejection-input {
+      width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-input); color: var(--text-main); font-size: 12px; margin-top: 6px;
+    }
+    .alert-banner { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 13px; }
+    .alert-info { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .alert-success { background: rgba(16,185,129,0.15); color: var(--primary); }
+    .alert-error { background: rgba(244,63,94,0.15); color: var(--rose); }
+    .empty-msg { color: var(--text-muted); text-align: center; padding: 40px; font-size: 14px; }
+    @media (max-width: 700px) {
+      .admin-table, .admin-table tbody, .admin-table tr, .admin-table td { display: block; }
+      .admin-table thead { display: none; }
+      .admin-table td { border-bottom: none; padding: 4px 8px; }
+      .admin-table tr { border: 1px solid var(--border-color); border-radius: 10px;
+        margin-bottom: 10px; background: var(--bg-card); padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="admin-shell">
+  <!-- Top Bar -->
+  <div class="admin-topbar">
+    <div class="admin-brand">
+      <div class="admin-logo"><i class="ri-shield-check-fill"></i></div>
+      <div>
+        <div class="admin-title">FoodBridge Admin</div>
+        <div class="admin-subtitle">Verification Dashboard</div>
+      </div>
+    </div>
+    <div id="adminUserInfo" style="display:none; align-items:center; gap:12px;">
+      <span style="font-size:13px; color:var(--text-muted)">Signed in as <strong id="adminUsername"></strong></span>
+      <button class="btn btn-sm btn-subtle" onclick="adminApp.logout()"><i class="ri-logout-box-r-line"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Login Panel -->
+  <div id="loginPanel" class="admin-login-wrap">
+    <div class="content-card">
+      <div class="card-title"><i class="ri-shield-keyhole-fill icon-accent"></i> Admin Sign In</div>
+      <div id="loginAlert"></div>
+      <form onsubmit="adminApp.login(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="adminUser" class="form-input" placeholder="admin" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPass" class="form-input" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn btn-primary width-full">Sign In <i class="ri-login-box-line"></i></button>
+      </form>
+      <div style="margin-top:14px; padding:10px; background:rgba(245,158,11,0.1); border-radius:8px; font-size:12px; color:var(--amber);">
+        <i class="ri-information-line"></i> Default: admin / FoodBridgeAdmin2026!
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Panel -->
+  <div id="dashboardPanel" style="display:none;">
+    <div id="globalAlert"></div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="adminApp.switchTab('donors', this)">
+        <i class="ri-store-2-line"></i> Donor Verifications
+      </button>
+      <button class="tab-btn" onclick="adminApp.switchTab('ngos', this)">
+        <i class="ri-heart-pulse-line"></i> NGO Verifications
+      </button>
+      <button class="tab-btn" onclick="adminApp.switchTab('volunteers', this)">
+        <i class="ri-motorbike-line"></i> Volunteer Verifications
+      </button>
+      <button class="tab-btn" onclick="adminApp.switchTab('rewards', this)">
+        <i class="ri-medal-line"></i> Rewards Audit & Revocation
+      </button>
+    </div>
+
+    <!-- Donors Tab -->
+    <div class="tab-panel active" id="tab-donors">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:16px; font-weight:700;">Donor FSSAI Verification Requests</h3>
+        <button class="btn btn-sm btn-subtle" onclick="adminApp.loadDonors()"><i class="ri-refresh-line"></i> Refresh</button>
+      </div>
+      <div id="donorsTableWrap"></div>
+    </div>
+
+    <!-- NGOs Tab -->
+    <div class="tab-panel" id="tab-ngos">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:16px; font-weight:700;">NGO Darpan Verification Requests</h3>
+        <button class="btn btn-sm btn-subtle" onclick="adminApp.loadNgos()"><i class="ri-refresh-line"></i> Refresh</button>
+      </div>
+      <div id="ngosTableWrap"></div>
+    </div>
+
+    <!-- Volunteers Tab -->
+    <div class="tab-panel" id="tab-volunteers">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:16px; font-weight:700;">Volunteer Identity Verification Requests</h3>
+        <button class="btn btn-sm btn-subtle" onclick="adminApp.loadVolunteers()"><i class="ri-refresh-line"></i> Refresh</button>
+      </div>
+      <div id="volunteersTableWrap"></div>
+    </div>
+
+    <!-- Rewards & Audit Tab -->
+    <div class="tab-panel" id="tab-rewards">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:16px; font-weight:700;">Rewards Audit & Points Revocation</h3>
+        <button class="btn btn-sm btn-subtle" onclick="adminApp.loadRewardsAudit()"><i class="ri-refresh-line"></i> Refresh</button>
+      </div>
+
+      <div class="content-card" style="margin-bottom:16px; padding:16px;">
+        <div class="card-title" style="margin-bottom:8px; font-size:14px; font-weight:700;"><i class="ri-shield-cross-line icon-accent"></i> Revoke Fraudulent Points</div>
+        <form onsubmit="adminApp.submitRevocation(event)" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+          <div style="flex:1; min-width:140px;">
+            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">Activity Type</label>
+            <select id="revokeActivityType" class="form-input" style="padding:6px 10px;">
+              <option value="donation">Donation</option>
+              <option value="delivery">Delivery</option>
+            </select>
+          </div>
+          <div style="flex:1; min-width:140px;">
+            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">Activity ID #</label>
+            <input type="number" id="revokeActivityId" class="form-input" placeholder="e.g. 1" required style="padding:6px 10px;">
+          </div>
+          <div style="flex:2; min-width:200px;">
+            <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">Audit Reason</label>
+            <input type="text" id="revokeReason" class="form-input" placeholder="e.g. Fraudulent donation listing / food spoiled" required style="padding:6px 10px;">
+          </div>
+          <button type="submit" class="btn btn-danger" style="padding:8px 16px;">
+            Revoke Points <i class="ri-arrow-go-back-line"></i>
+          </button>
+        </form>
+      </div>
+
+      <div id="rewardsAuditWrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-backdrop" id="rejectModal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>Reject Verification</h3>
+      <button class="modal-close" onclick="adminApp.closeModal()"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">
+        Please provide a reason for rejection. This will be shown to the applicant.
+      </p>
+      <textarea id="rejectReasonInput" class="form-input" rows="3"
+        placeholder="e.g. FSSAI number does not match uploaded certificate"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="adminApp.closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="adminApp.confirmReject()">
+        Confirm Rejection <i class="ri-close-circle-fill"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const adminApp = {
+  currentTab: 'donors',
+  pendingReject: null,
+
+  async login(e) {
+    e.preventDefault();
+    const username = document.getElementById('adminUser').value.trim();
+    const password = document.getElementById('adminPass').value.trim();
+    const res = await fetch('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('loginPanel').style.display = 'none';
+      document.getElementById('dashboardPanel').style.display = 'block';
+      document.getElementById('adminUserInfo').style.display = 'flex';
+      document.getElementById('adminUsername').textContent = data.username;
+      this.loadDonors();
+    } else {
+      document.getElementById('loginAlert').innerHTML =
+        `<div class="alert-banner alert-error"><i class="ri-error-warning-line"></i> ${data.error}</div>`;
+    }
+  },
+
+  async logout() {
+    await fetch('/admin/logout');
+    location.reload();
+  },
+
+  switchTab(tab, btn) {
+    this.currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    if (tab === 'donors') this.loadDonors();
+    if (tab === 'ngos') this.loadNgos();
+    if (tab === 'volunteers') this.loadVolunteers();
+    if (tab === 'rewards') this.loadRewardsAudit();
+  },
+
+  async loadRewardsAudit() {
+    const wrap = document.getElementById('rewardsAuditWrap');
+    wrap.innerHTML = '<p class="empty-msg"><i class="ri-loader-4-line"></i> Loading rewards ledger...</p>';
+    const res = await fetch('/api/admin/rewards/audit-log');
+    const data = await res.json();
+    if (!data.success || !data.audit_log || data.audit_log.length === 0) {
+      wrap.innerHTML = '<p class="empty-msg">No rewards transactions logged yet.</p>';
+      return;
+    }
+    wrap.innerHTML = `
+      <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>User</th>
+            <th>Role</th>
+            <th>Type</th>
+            <th>Points</th>
+            <th>Balance After</th>
+            <th>Description</th>
+            <th>Reference ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.audit_log.map(t => `
+            <tr>
+              <td>${t.created_at}</td>
+              <td><strong>${t.user_name || 'ID ' + t.user_id}</strong></td>
+              <td><span class="status-badge" style="background:rgba(99,102,241,0.15); color:var(--secondary);">${t.user_role}</span></td>
+              <td><code>${t.transaction_type}</code></td>
+              <td style="font-weight:700; color:${t.points >= 0 ? 'var(--primary)' : 'var(--rose)'};">
+                ${t.points >= 0 ? '+' : ''}${t.points}
+              </td>
+              <td>${t.balance_after}</td>
+              <td>${t.description}</td>
+              <td><code style="font-size:11px;">${t.reference_id || '—'}</code></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      </div>
+    `;
+  },
+
+  async submitRevocation(e) {
+    e.preventDefault();
+    const activity_type = document.getElementById('revokeActivityType').value;
+    const activity_id = document.getElementById('revokeActivityId').value;
+    const reason = document.getElementById('revokeReason').value.trim();
+
+    if (!confirm(`Are you sure you want to revoke points for ${activity_type} #${activity_id}? This will deduct awarded points and recalculate badges.`)) {
+      return;
+    }
+
+    const res = await fetch('/api/admin/rewards/revoke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ activity_type, activity_id, reason })
+    });
+    const data = await res.json();
+    if (data.success) {
+      this.showToast('Points successfully revoked and audit recorded.', 'success');
+      document.getElementById('revokeActivityId').value = '';
+      document.getElementById('revokeReason').value = '';
+      this.loadRewardsAudit();
+    } else {
+      this.showToast(data.error || 'Failed to revoke points', 'error');
+    }
+  },
+
+  showToast(msg, type = 'info') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast-item ${type}`;
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  },
+
+  closeModal() {
+    document.getElementById('rejectModal').classList.remove('active');
+    this.pendingReject = null;
+  },
+
+  openRejectModal(type, id) {
+    this.pendingReject = { type, id };
+    document.getElementById('rejectReasonInput').value = '';
+    document.getElementById('rejectModal').classList.add('active');
+  },
+
+  async confirmReject() {
+    const reason = document.getElementById('rejectReasonInput').value.trim();
+    if (!reason) { this.showToast('Please enter a rejection reason', 'error'); return; }
+    const { type, id } = this.pendingReject;
+    const res = await fetch('/api/admin/reject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, id, reason })
+    });
+    const data = await res.json();
+    if (data.success) {
+      this.showToast(data.message, 'success');
+      this.closeModal();
+      if (type === 'donor') this.loadDonors();
+      if (type === 'ngo') this.loadNgos();
+      if (type === 'volunteer') this.loadVolunteers();
+    } else {
+      this.showToast(data.error, 'error');
+    }
+  },
+
+  async approve(type, id) {
+    if (!confirm(`Approve this ${type} verification?`)) return;
+    const res = await fetch('/api/admin/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, id })
+    });
+    const data = await res.json();
+    if (data.success) {
+      this.showToast(data.message, 'success');
+      if (type === 'donor') this.loadDonors();
+      if (type === 'ngo') this.loadNgos();
+      if (type === 'volunteer') this.loadVolunteers();
+    } else {
+      this.showToast(data.error, 'error');
+    }
+  },
+
+  statusBadge(s) {
+    return `<span class="status-badge status-${s || 'Pending'}">${s || 'Pending'}</span>`;
+  },
+
+  docLink(path, label) {
+    if (!path) return '<span style="color:var(--text-muted);font-size:11px;">Not uploaded</span>';
+    return `<a href="/admin/doc/${path}" target="_blank" class="btn-doc"><i class="ri-file-line"></i> ${label}</a>`;
+  },
+
+  actionButtons(type, row) {
+    const s = row.verification_status;
+    return `
+      <button class="btn-approve" onclick="adminApp.approve('${type}', ${row.id})" ${s === 'Verified' ? 'disabled style="opacity:.5"' : ''}>
+        <i class="ri-check-line"></i> Approve
+      </button>
+      <button class="btn-reject" onclick="adminApp.openRejectModal('${type}', ${row.id})">
+        <i class="ri-close-line"></i> Reject
+      </button>`;
+  },
+
+  async loadDonors() {
+    const res = await fetch('/api/admin/pending-donors');
+    if (!res.ok) { this.showToast('Session expired. Please refresh.', 'error'); return; }
+    const data = await res.json();
+    const wrap = document.getElementById('donorsTableWrap');
+    if (!data.data || data.data.length === 0) {
+      wrap.innerHTML = '<div class="empty-msg"><i class="ri-inbox-2-line"></i><br>No donor verification requests yet.</div>';
+      return;
+    }
+    wrap.innerHTML = `<div style="overflow-x:auto"><table class="admin-table">
+      <thead><tr>
+        <th>Donor</th><th>Type</th><th>FSSAI No.</th>
+        <th>Certificate</th><th>Status</th><th>Submitted</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${data.data.map(r => `
+        <tr>
+          <td><strong>${r.donor_name}</strong><br><small style="color:var(--text-muted)">${r.email || ''}</small></td>
+          <td>${r.donor_type}</td>
+          <td><code>${r.fssai_number || '—'}</code></td>
+          <td>${this.docLink(r.fssai_cert_path, 'FSSAI Cert')}</td>
+          <td>${this.statusBadge(r.verification_status)}
+            ${r.rejection_reason ? `<br><small style="color:var(--rose)">${r.rejection_reason}</small>` : ''}
+          </td>
+          <td style="font-size:11px; color:var(--text-muted)">${r.submitted_at ? r.submitted_at.split('T')[0] : '—'}</td>
+          <td>${this.actionButtons('donor', r)}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+  },
+
+  async loadNgos() {
+    const res = await fetch('/api/admin/pending-ngos');
+    if (!res.ok) { this.showToast('Session expired. Please refresh.', 'error'); return; }
+    const data = await res.json();
+    const wrap = document.getElementById('ngosTableWrap');
+    if (!data.data || data.data.length === 0) {
+      wrap.innerHTML = '<div class="empty-msg"><i class="ri-inbox-2-line"></i><br>No NGO verification requests yet.</div>';
+      return;
+    }
+    wrap.innerHTML = `<div style="overflow-x:auto"><table class="admin-table">
+      <thead><tr>
+        <th>NGO</th><th>Darpan ID</th><th>Reg. Type</th>
+        <th>12A / 80G</th><th>Contact Person</th>
+        <th>Certificate</th><th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${data.data.map(r => `
+        <tr>
+          <td><strong>${r.ngo_name}</strong><br><small style="color:var(--text-muted)">${r.email || ''}</small></td>
+          <td><code>${r.darpan_id || '—'}</code></td>
+          <td>${r.reg_type || '—'}</td>
+          <td>${r.reg_12a || '—'} / ${r.reg_80g || '—'}</td>
+          <td>${r.contact_person || '—'}<br><small>${r.contact_phone || ''}</small></td>
+          <td>${this.docLink(r.reg_cert_path, 'Reg. Cert')}</td>
+          <td>${this.statusBadge(r.verification_status)}
+            ${r.rejection_reason ? `<br><small style="color:var(--rose)">${r.rejection_reason}</small>` : ''}
+          </td>
+          <td>${this.actionButtons('ngo', r)}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+  },
+
+  async loadVolunteers() {
+    const res = await fetch('/api/admin/pending-volunteers');
+    if (!res.ok) { this.showToast('Session expired. Please refresh.', 'error'); return; }
+    const data = await res.json();
+    const wrap = document.getElementById('volunteersTableWrap');
+    if (!data.data || data.data.length === 0) {
+      wrap.innerHTML = '<div class="empty-msg"><i class="ri-inbox-2-line"></i><br>No volunteer verification requests yet.</div>';
+      return;
+    }
+    wrap.innerHTML = `<div style="overflow-x:auto"><table class="admin-table">
+      <thead><tr>
+        <th>Volunteer</th><th>Vehicle</th><th>Vehicle Reg.</th>
+        <th>Photo ID</th><th>Selfie</th><th>DL</th>
+        <th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${data.data.map(r => `
+        <tr>
+          <td><strong>${r.name}</strong><br><small style="color:var(--text-muted)">${r.email || ''} ${r.contact_no || ''}</small></td>
+          <td>${r.vehicle_type}</td>
+          <td>${r.vehicle_reg_no || '—'}</td>
+          <td>${this.docLink(r.photo_id_path, 'Photo ID')}</td>
+          <td>${this.docLink(r.selfie_path, 'Selfie')}</td>
+          <td>${this.docLink(r.dl_path, 'DL')}</td>
+          <td>${this.statusBadge(r.verification_status)}
+            ${r.rejection_reason ? `<br><small style="color:var(--rose)">${r.rejection_reason}</small>` : ''}
+          </td>
+          <td>${this.actionButtons('volunteer', r)}</td>
+        </tr>`).join('')}
+      </tbody></table></div>`;
+  },
+
+  async checkSession() {
+    const res = await fetch('/api/admin/me');
+    const data = await res.json();
+    if (data.authenticated) {
+      document.getElementById('loginPanel').style.display = 'none';
+      document.getElementById('dashboardPanel').style.display = 'block';
+      document.getElementById('adminUserInfo').style.display = 'flex';
+      document.getElementById('adminUsername').textContent = data.username;
+      this.loadDonors();
+    }
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => adminApp.checkSession());
+</script>
+</body>
+</html>

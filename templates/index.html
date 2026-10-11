@@ -238,6 +238,20 @@
                 <input type="password" id="signupPassword" class="form-input" placeholder="Create a password" required>
               </div>
 
+              <!-- Donor Type (shown only for donor role) -->
+              <div id="donorTypeField" style="display:none;">
+                <div class="form-group">
+                  <label><i class="ri-store-2-line"></i> Donor Type</label>
+                  <select id="signupDonorType" class="form-select">
+                    <option value="Individual">Individual</option>
+                    <option value="Restaurant">Restaurant / Catering</option>
+                    <option value="Hotel">Hotel / Resort</option>
+                    <option value="Bakery">Bakery / Cafe</option>
+                    <option value="Corporate">Corporate / Institution</option>
+                  </select>
+                </div>
+              </div>
+
               <!-- Extra NGO Fields -->
               <div id="ngoExtraFields" style="display: none;">
                 <div class="form-group">
@@ -270,6 +284,11 @@
                 <button class="btn btn-sm btn-subtle" onclick="app.quickLogin('Fresh Bites Bakery', 'donor123', 'donor')">Demo Donor</button>
                 <button class="btn btn-sm btn-subtle" onclick="app.quickLogin('Hope Haven Shelter', 'donor123', 'ngo')">Demo NGO</button>
                 <button class="btn btn-sm btn-subtle" onclick="app.quickLogin('Alex Rivera', 'donor123', 'volunteer')">Demo Volunteer</button>
+              </div>
+              <div style="text-align:center;margin-top:10px;">
+                <a href="/admin" target="_blank" style="color:var(--text-muted);font-size:11px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                  <i class="ri-shield-keyhole-line"></i> Admin Verification Portal
+                </a>
               </div>
             </div>
           </div>
@@ -328,6 +347,9 @@
             <button class="segment-btn" onclick="app.switchDonorSubTab('profile', this)">
               <i class="ri-user-settings-line"></i> Profile
             </button>
+            <button class="segment-btn" onclick="app.switchDonorSubTab('rewards', this)">
+              <i class="ri-medal-fill"></i> Rewards
+            </button>
           </div>
 
           <!-- Donor Sub-tab 1: Post Donation Form -->
@@ -336,7 +358,7 @@
               <div class="card-title">
                 <i class="ri-restaurant-2-fill icon-accent"></i> Post Surplus Food Donation
               </div>
-              <form id="postDonationForm" onsubmit="app.submitDonation(event)">
+              <form id="postDonationForm" onsubmit="app.submitDonation(event)" enctype="multipart/form-data">
                 <div class="form-group">
                   <label>Food Item / Description</label>
                   <input type="text" id="postFoodType" class="form-input" placeholder="e.g. 50 Trays of Fresh Rice & Vegetables" required>
@@ -354,6 +376,24 @@
                 <div class="form-group">
                   <label>Date of Donation</label>
                   <input type="date" id="postDate" class="form-input" required>
+                </div>
+                <!-- NEW: Food Safety Details -->
+                <div class="form-row">
+                  <div class="form-group">
+                    <label><i class="ri-time-line"></i> Cooked / Prepared At</label>
+                    <input type="datetime-local" id="postCookedAt" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label><i class="ri-leaf-line"></i> Food Category</label>
+                    <select id="postFoodCategory" class="form-select">
+                      <option value="Vegetarian">🟢 Vegetarian</option>
+                      <option value="Non-Vegetarian">🔴 Non-Vegetarian</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-image-line"></i> Food Photo (optional)</label>
+                  <input type="file" id="postFoodPhoto" class="form-input" accept="image/*" style="padding:6px;">
                 </div>
                 <button type="submit" class="btn btn-primary width-full">
                   Post Donation Now <i class="ri-send-plane-fill"></i>
@@ -422,6 +462,174 @@
                 <button type="button" class="btn btn-outline width-full btn-logout-danger" onclick="app.logout()"><i class="ri-logout-box-r-line"></i> Log Out of Account</button>
               </form>
             </div>
+
+            <!-- FSSAI Verification Section -->
+            <div class="content-card" style="margin-top:12px;">
+              <div class="card-title"><i class="ri-government-fill icon-accent"></i> FSSAI Verification
+                <span id="fssaiBadge" style="display:none;" class="verified-badge"><i class="ri-verified-badge-fill"></i> FSSAI Verified</span>
+              </div>
+              <div id="fssaiStatusDisplay" style="margin-bottom:10px; font-size:12px; color:var(--text-muted);"></div>
+              <form id="fssaiVerifyForm" onsubmit="app.submitDonorVerification(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label><i class="ri-barcode-line"></i> FSSAI License / Registration Number</label>
+                  <input type="text" id="fssaiNumber" class="form-input" placeholder="14-digit FSSAI number" maxlength="14" pattern="[0-9]{14}">
+                  <small style="color:var(--text-muted);font-size:11px;">Required for business donors. Must be exactly 14 digits.</small>
+                </div>
+                <div class="form-group" id="fssaiCertGroup">
+                  <label><i class="ri-file-upload-line"></i> FSSAI Certificate (PDF/JPG/PNG, max 5MB)</label>
+                  <input type="file" id="fssaiCert" class="form-input" accept=".pdf,.jpg,.jpeg,.png" style="padding:6px;">
+                  <small style="color:var(--text-muted);font-size:11px;">Required for business donors.</small>
+                </div>
+                <button type="submit" class="btn btn-secondary width-full">
+                  Submit for Verification <i class="ri-shield-check-line"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Donor Sub-tab 6: Rewards & Recognition Hub -->
+          <div class="subtab-content" id="donor-sub-rewards">
+            <!-- 1. Points Hero Card -->
+            <div class="rewards-hero-card">
+              <div class="rewards-hero-top">
+                <div class="points-display">
+                  <span class="points-val" id="donorRewardBal">0</span>
+                  <span class="points-lbl">Available FB Points</span>
+                </div>
+                <div class="rewards-badge-pill" id="donorRewardBadgePill">
+                  <i class="ri-medal-fill"></i> <span id="donorRewardBadge">New Contributor</span>
+                </div>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span>Lifetime Earned: <strong id="donorRewardLifetime" style="color:var(--text-main);">0</strong> FB Points</span>
+                <span id="donorBadgeNextPreview" style="color:var(--amber);">Next: First Step</span>
+              </div>
+            </div>
+
+            <!-- 2. Monthly Donation Streak -->
+            <div class="streak-card">
+              <div class="streak-icon-box">
+                <i class="ri-fire-fill"></i>
+              </div>
+              <div class="streak-info">
+                <div class="streak-title">
+                  <span>Monthly Donation Streak</span>
+                  <span style="color:var(--rose);" id="donorStreakCurrent">0 Months</span>
+                </div>
+                <div class="streak-sub">
+                  Longest Streak: <strong id="donorStreakLongest">0 Months</strong> • <span id="donorStreakNext">Next: 2-Month Streak (+100 pts)</span>
+                </div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">
+                  +100 pts (2 mos) • +200 pts (3 mos) • +500 pts (6 mos) • Consistency Champion (12 mos)
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Personal Impact Dashboard -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-pie-chart-2-fill icon-accent"></i> Personal Impact Dashboard
+              </div>
+              <div class="dashboard-stats-row" style="margin-bottom:12px;">
+                <div class="mini-stat-card success">
+                  <span class="stat-num" id="donorImpactDonations">0</span>
+                  <span class="stat-label">Successful Donations</span>
+                </div>
+                <div class="mini-stat-card info">
+                  <span class="stat-num" id="donorImpactQty">0</span>
+                  <span class="stat-label">Food Donated</span>
+                </div>
+                <div class="mini-stat-card warning">
+                  <span class="stat-num" id="donorImpactMeals">0</span>
+                  <span class="stat-label">Estimated Meals</span>
+                </div>
+                <div class="mini-stat-card">
+                  <span class="stat-num" id="donorImpactCerts">0</span>
+                  <span class="stat-label">Certificates</span>
+                </div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin:0;">
+                <i class="ri-information-line"></i> <em>Impact Note: Meals provided are calculated as estimates (1 meal per serving or 2.5 meals per kg).</em>
+              </p>
+            </div>
+
+            <!-- 4. Achievement Badges -->
+            <div class="content-card">
+              <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="ri-award-fill icon-accent"></i> Achievement Badges</span>
+                <span id="donorBadgeProgressText" style="font-size:11px; color:var(--amber); font-weight:700;">0/1 Don</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                Current Tier: <strong id="donorCurrentBadgeTitle" style="color:var(--text-main);">New Contributor</strong> • Next Tier: <strong id="donorNextBadgeTitle" style="color:var(--primary);">First Step</strong>
+              </div>
+              <div class="badges-grid" id="donorBadgesGrid">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 5. Top Donors Leaderboard -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-trophy-fill icon-accent"></i> Top Donors Leaderboard
+              </div>
+              <div class="opt-in-box">
+                <span><i class="ri-eye-line"></i> Public Leaderboard Participation</span>
+                <label style="cursor:pointer; display:flex; align-items:center; gap:6px;">
+                  <input type="checkbox" id="donorLeaderboardOptInCheck" onchange="app.toggleLeaderboardOptIn('donor', this.checked)">
+                  <span style="font-size:11px; color:var(--text-muted);">Include Me</span>
+                </label>
+              </div>
+              <div class="leaderboard-tabs">
+                <button class="leaderboard-pill active" id="donorLbTabMonthly" onclick="app.switchLeaderboardType('donor', 'monthly')">This Month</button>
+                <button class="leaderboard-pill" id="donorLbTabAllTime" onclick="app.switchLeaderboardType('donor', 'all_time')">All-Time</button>
+              </div>
+              <div class="leaderboard-list" id="donorLeaderboardList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 6. Downloadable Appreciation Certificates -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-file-paper-2-fill icon-accent"></i> Downloadable Appreciation Certificates
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                Official certificates automatically awarded for reaching donation milestones or redeemed with FB Points.
+              </p>
+              <div id="donorCertificatesList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 7. Rewards Redemption Store -->
+            <div class="content-card">
+              <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="ri-store-3-fill icon-accent"></i> Digital Rewards Store</span>
+                <span style="font-size:12px; color:var(--primary); font-weight:700;"><span id="donorStoreBal">0</span> FB Pts</span>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">
+                Redeem your earned FoodBridge Points for exclusive digital recognition honors.
+              </p>
+              <div class="store-grid" id="donorStoreGrid">
+                <!-- Populated via JS -->
+              </div>
+              <div class="section-title-bar" style="margin-top:16px;">
+                <h4>Redeemed Recognition History</h4>
+              </div>
+              <div id="donorRedemptionsList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 8. Rewards History Ledger -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-history-line icon-accent"></i> Points History Ledger
+              </div>
+              <div id="donorHistoryList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
           </div>
         </section>
 
@@ -473,6 +681,9 @@
             </button>
             <button class="segment-btn" onclick="app.switchNgoSubTab('profile', this)">
               <i class="ri-building-4-line"></i> Profile
+            </button>
+            <button class="segment-btn" onclick="app.switchNgoSubTab('impact', this)">
+              <i class="ri-heart-pulse-fill"></i> Impact & Recognition
             </button>
           </div>
 
@@ -552,6 +763,153 @@
                 <button type="button" class="btn btn-outline width-full btn-logout-danger" onclick="app.logout()"><i class="ri-logout-box-r-line"></i> Log Out of Account</button>
               </form>
             </div>
+
+            <!-- NGO Verification Section -->
+            <div class="content-card" style="margin-top:12px;">
+              <div class="card-title"><i class="ri-verified-badge-fill icon-accent"></i> NGO Verification
+                <span id="ngoBadge" style="display:none;" class="verified-badge ngo-badge"><i class="ri-verified-badge-fill"></i> NGO Verified</span>
+              </div>
+              <div id="ngoVerStatusDisplay" style="margin-bottom:10px; font-size:12px; color:var(--text-muted);"></div>
+              <form id="ngoVerifyForm" onsubmit="app.submitNgoVerification(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label><i class="ri-id-card-line"></i> NGO Darpan ID <span style="color:var(--rose)">*</span></label>
+                  <input type="text" id="ngoDarpanId" class="form-input" placeholder="e.g. MH/2022/0301234" required>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-file-list-3-line"></i> Registration Type</label>
+                  <select id="ngoRegType" class="form-select">
+                    <option value="Trust">Trust</option>
+                    <option value="Society">Society</option>
+                    <option value="Section8">Section 8 Company</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-file-upload-line"></i> Registration Certificate (PDF/JPG/PNG)</label>
+                  <input type="file" id="ngoRegCert" class="form-input" accept=".pdf,.jpg,.jpeg,.png" style="padding:6px;">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>12A Number (optional)</label>
+                    <input type="text" id="ngoReg12a" class="form-input" placeholder="12A reg. no.">
+                  </div>
+                  <div class="form-group">
+                    <label>80G Number (optional)</label>
+                    <input type="text" id="ngoReg80g" class="form-input" placeholder="80G reg. no.">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label><i class="ri-user-star-line"></i> Contact Person <span style="color:var(--rose)">*</span></label>
+                    <input type="text" id="ngoContactPerson" class="form-input" placeholder="Name" required>
+                  </div>
+                  <div class="form-group">
+                    <label><i class="ri-phone-line"></i> Contact Phone <span style="color:var(--rose)">*</span></label>
+                    <input type="tel" id="ngoContactPhone" class="form-input" placeholder="+91 XXXXX" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-secondary width-full">
+                  Submit NGO Verification <i class="ri-shield-check-line"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- NGO Sub-tab 6: Impact & Recognition Hub -->
+          <div class="subtab-content" id="ngo-sub-impact">
+            <!-- 1. NGO Impact Hero Card -->
+            <div class="rewards-hero-card">
+              <div class="rewards-hero-top">
+                <div class="points-display">
+                  <span class="points-val" id="ngoImpactMealsDist">0</span>
+                  <span class="points-lbl">Verified Meals Distributed</span>
+                </div>
+                <div class="rewards-badge-pill" id="ngoImpactBadgePill">
+                  <i class="ri-heart-pulse-fill"></i> <span id="ngoImpactBadge">Community Supporter</span>
+                </div>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span>Verified Distributions: <strong id="ngoImpactDistCount" style="color:var(--text-main);">0</strong></span>
+                <span>Total Food Received: <strong id="ngoImpactQtyRec" style="color:var(--primary);">0 Units</strong></span>
+              </div>
+            </div>
+
+            <!-- 2. NGO Stats Row -->
+            <div class="dashboard-stats-row" style="margin-bottom:12px;">
+              <div class="mini-stat-card success">
+                <span class="stat-num" id="ngoImpactDonationsRec">0</span>
+                <span class="stat-label">Donations Received</span>
+              </div>
+              <div class="mini-stat-card warning">
+                <span class="stat-num" id="ngoStatVerifiedDist">0</span>
+                <span class="stat-label">Verified Distributions</span>
+              </div>
+              <div class="mini-stat-card info">
+                <span class="stat-num" id="ngoStatPendingDist">0</span>
+                <span class="stat-label">Pending Confirmation</span>
+              </div>
+            </div>
+
+            <!-- 3. NGO Achievement Badges -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-award-fill icon-accent"></i> NGO Impact Recognition Badges
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">
+                Earned strictly through verified on-ground community food distributions.
+              </p>
+              <div class="badges-grid" id="ngoBadgesGrid">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 4. Verified Food Distribution Confirmation Form -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-checkbox-circle-fill icon-accent"></i> Confirm Community Distribution
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                Confirm that received food has been successfully distributed to community beneficiaries.
+              </p>
+              <form id="ngoDistConfirmForm" onsubmit="app.submitNgoDistributionConfirmation(event)">
+                <div class="form-group">
+                  <label><i class="ri-truck-line"></i> Select Received Delivery Order <span style="color:var(--rose)">*</span></label>
+                  <select id="ngoDistDeliverySelect" class="form-input" required onchange="app.onNgoDeliverySelectChange()">
+                    <option value="">-- Choose Received Delivery --</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label><i class="ri-restaurant-line"></i> Meals Distributed <span style="color:var(--rose)">*</span></label>
+                    <input type="number" id="ngoDistMealsInput" class="form-input" placeholder="e.g. 50" min="1" required>
+                  </div>
+                  <div class="form-group">
+                    <label><i class="ri-calendar-line"></i> Distribution Date <span style="color:var(--rose)">*</span></label>
+                    <input type="date" id="ngoDistDateInput" class="form-input" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-community-line"></i> Beneficiary Group / Community <span style="color:var(--rose)">*</span></label>
+                  <input type="text" id="ngoDistBeneficiaryInput" class="form-input" placeholder="e.g. Downtown Slum Children / Night Shelter" required>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-file-text-line"></i> Distribution Notes (Optional)</label>
+                  <input type="text" id="ngoDistNotesInput" class="form-input" placeholder="e.g. Served fresh hot meals to 50 residents.">
+                </div>
+                <button type="submit" class="btn btn-primary width-full">
+                  Record Verified Distribution <i class="ri-check-double-line"></i>
+                </button>
+              </form>
+            </div>
+
+            <!-- 5. Past Verified Distribution History -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-history-line icon-accent"></i> Verified Distribution Log
+              </div>
+              <div id="ngoDistHistoryList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
           </div>
         </section>
 
@@ -600,6 +958,9 @@
             </button>
             <button class="segment-btn" onclick="app.switchVolSubTab('profile', this)">
               <i class="ri-user-fill"></i> Profile
+            </button>
+            <button class="segment-btn" onclick="app.switchVolSubTab('rewards', this)">
+              <i class="ri-medal-fill"></i> Rewards
             </button>
           </div>
 
@@ -668,6 +1029,173 @@
                 <button type="submit" class="btn btn-primary width-full" style="margin-bottom: 10px;">Save Volunteer Profile</button>
                 <button type="button" class="btn btn-outline width-full btn-logout-danger" onclick="app.logout()"><i class="ri-logout-box-r-line"></i> Log Out of Account</button>
               </form>
+            </div>
+
+            <!-- Volunteer Verification Section -->
+            <div class="content-card" style="margin-top:12px;">
+              <div class="card-title"><i class="ri-id-card-fill icon-accent"></i> Identity Verification
+                <span id="volVerBadge" style="display:none;" class="verified-badge vol-badge"><i class="ri-verified-badge-fill"></i> Verified</span>
+              </div>
+              <div id="volVerStatusDisplay" style="margin-bottom:10px; font-size:12px; color:var(--text-muted);"></div>
+              <form id="volVerifyForm" onsubmit="app.submitVolVerification(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label><i class="ri-id-card-line"></i> Photo ID (Driving Licence / College ID / Voter ID) <span style="color:var(--rose)">*</span></label>
+                  <input type="file" id="volPhotoId" class="form-input" accept=".pdf,.jpg,.jpeg,.png" style="padding:6px;" required>
+                  <small style="color:var(--text-muted);font-size:11px;">PDF, JPG or PNG. Max 5MB.</small>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-camera-line"></i> Selfie for Identity Review <span style="color:var(--rose)">*</span></label>
+                  <input type="file" id="volSelfie" class="form-input" accept="image/*" style="padding:6px;" required>
+                  <small style="color:var(--text-muted);font-size:11px;">Selfie photo (JPG/PNG/WEBP). Max 5MB. Not publicly visible.</small>
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-car-line"></i> Vehicle Registration Number (optional)</label>
+                  <input type="text" id="volVehicleReg" class="form-input" placeholder="e.g. MH12AB1234">
+                </div>
+                <div class="form-group">
+                  <label><i class="ri-file-certificate-line"></i> Driving Licence (optional, for riders/drivers)</label>
+                  <input type="file" id="volDl" class="form-input" accept=".pdf,.jpg,.jpeg,.png" style="padding:6px;">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Emergency Contact Name (optional)</label>
+                    <input type="text" id="volEmergencyName" class="form-input" placeholder="e.g. Parent / Sibling">
+                  </div>
+                  <div class="form-group">
+                    <label>Emergency Contact Phone (optional)</label>
+                    <input type="tel" id="volEmergencyPhone" class="form-input" placeholder="+91 XXXXX">
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-secondary width-full">
+                  Submit for Verification <i class="ri-shield-check-line"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Volunteer Sub-tab 5: Rewards & Recognition Hub -->
+          <div class="subtab-content" id="vol-sub-rewards">
+            <!-- 1. Points Hero Card -->
+            <div class="rewards-hero-card">
+              <div class="rewards-hero-top">
+                <div class="points-display">
+                  <span class="points-val" id="volRewardBal">0</span>
+                  <span class="points-lbl">Available FB Points</span>
+                </div>
+                <div class="rewards-badge-pill" id="volRewardBadgePill">
+                  <i class="ri-medal-fill"></i> <span id="volRewardBadge">First Ride</span>
+                </div>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
+                <span>Lifetime Earned: <strong id="volRewardLifetime" style="color:var(--text-main);">0</strong> FB Points</span>
+                <span id="volBadgeNextPreview" style="color:var(--amber);">Next: First Ride</span>
+              </div>
+            </div>
+
+            <!-- 2. Personal Impact Dashboard -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-pie-chart-2-fill icon-accent"></i> Volunteer Impact Dashboard
+              </div>
+              <div class="dashboard-stats-row" style="margin-bottom:12px;">
+                <div class="mini-stat-card success">
+                  <span class="stat-num" id="volImpactDeliveries">0</span>
+                  <span class="stat-label">Deliveries Completed</span>
+                </div>
+                <div class="mini-stat-card info">
+                  <span class="stat-num" id="volImpactFoodTransported">0</span>
+                  <span class="stat-label">Food Rescued</span>
+                </div>
+                <div class="mini-stat-card warning">
+                  <span class="stat-num" id="volImpactMeals">0</span>
+                  <span class="stat-label">Estimated Meals</span>
+                </div>
+                <div class="mini-stat-card">
+                  <span class="stat-num" id="volImpactCerts">0</span>
+                  <span class="stat-label">Certificates</span>
+                </div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin:0;">
+                <i class="ri-information-line"></i> <em>Impact Note: Meals rescued are calculated as estimates (1 meal per serving or 2.5 meals per kg).</em>
+              </p>
+            </div>
+
+            <!-- 3. Achievement Badges -->
+            <div class="content-card">
+              <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="ri-award-fill icon-accent"></i> Volunteer Achievement Badges</span>
+                <span id="volBadgeProgressText" style="font-size:11px; color:var(--amber); font-weight:700;">0/1 Del</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                Current Tier: <strong id="volCurrentBadgeTitle" style="color:var(--text-main);">Active Volunteer</strong> • Next Tier: <strong id="volNextBadgeTitle" style="color:var(--primary);">First Ride</strong>
+              </div>
+              <div class="badges-grid" id="volBadgesGrid">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 4. Top Volunteers Leaderboard -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-trophy-fill icon-accent"></i> Top Volunteers Leaderboard
+              </div>
+              <div class="opt-in-box">
+                <span><i class="ri-eye-line"></i> Public Leaderboard Participation</span>
+                <label style="cursor:pointer; display:flex; align-items:center; gap:6px;">
+                  <input type="checkbox" id="volLeaderboardOptInCheck" onchange="app.toggleLeaderboardOptIn('volunteer', this.checked)">
+                  <span style="font-size:11px; color:var(--text-muted);">Include Me</span>
+                </label>
+              </div>
+              <div class="leaderboard-tabs">
+                <button class="leaderboard-pill active" id="volLbTabMonthly" onclick="app.switchLeaderboardType('volunteer', 'monthly')">This Month</button>
+                <button class="leaderboard-pill" id="volLbTabAllTime" onclick="app.switchLeaderboardType('volunteer', 'all_time')">All-Time</button>
+              </div>
+              <div class="leaderboard-list" id="volLeaderboardList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 5. Downloadable Appreciation Certificates -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-file-paper-2-fill icon-accent"></i> Downloadable Appreciation Certificates
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                Official certificates automatically awarded for reaching delivery milestones or redeemed with FB Points.
+              </p>
+              <div id="volCertificatesList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 6. Rewards Redemption Store -->
+            <div class="content-card">
+              <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="ri-store-3-fill icon-accent"></i> Digital Rewards Store</span>
+                <span style="font-size:12px; color:var(--primary); font-weight:700;"><span id="volStoreBal">0</span> FB Pts</span>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">
+                Redeem your earned FoodBridge Points for exclusive digital recognition honors.
+              </p>
+              <div class="store-grid" id="volStoreGrid">
+                <!-- Populated via JS -->
+              </div>
+              <div class="section-title-bar" style="margin-top:16px;">
+                <h4>Redeemed Recognition History</h4>
+              </div>
+              <div id="volRedemptionsList">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- 7. Rewards History Ledger -->
+            <div class="content-card">
+              <div class="card-title">
+                <i class="ri-history-line icon-accent"></i> Points History Ledger
+              </div>
+              <div id="volHistoryList">
+                <!-- Populated via JS -->
+              </div>
             </div>
           </div>
         </section>
@@ -775,6 +1303,22 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="app.closeModal('otpModal')">Cancel</button>
         <button class="btn btn-success" id="confirmOtpBtn">Verify & Complete <i class="ri-shield-check-fill"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Volunteer Profile Card (shown to donor before pickup) -->
+  <div class="modal-backdrop" id="volCardModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Volunteer Info</h3>
+        <button class="modal-close" onclick="app.closeModal('volCardModal')"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body" id="volCardBody">
+        <!-- Populated by JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeModal('volCardModal')">Close</button>
       </div>
     </div>
   </div>

@@ -9,3 +9,26 @@ android-project/.gradle/
 android-project/build/
 android-project/app/build/
 android-project/local.properties
+
+# Local databases and private user uploads
+*.db
+*.sqlite
+*.sqlite3
+private_uploads/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Android local configuration and generated files
+android-project/local.properties
+android-project/.gradle/
+android-project/build/
+android-project/app/build/
+
+
+# Local project archive
+FoodBridge_With_Rewards.zip
+
+FoodBridge_With_Rewards.zip
